@@ -699,14 +699,11 @@ function switchTab(id) {
   if (current) localStorage.setItem(`poe2_tab_${current.id}`, id);
   const act = current && current.acts.find(a => a.id === id);
   if (act && act.alerts && act.alerts.length) {
-    const seenKey = `poe2_alerts_seen_${current.id}_${id}`;
-    if (!localStorage.getItem(seenKey)) {
-      const box = document.getElementById('mBox');
-      box.innerHTML = `<div class="alert-hd">⚠ Critical — read before you start this act</div>`
-        + act.alerts.map(a => `<div class="alert-item"><div class="alert-title">${esc(a.title)}</div><div class="alert-body">${esc(a.body)}</div></div>`).join('')
-        + `<button class="alert-ok" onclick="document.getElementById('mOverlay').style.display='none';localStorage.setItem('${seenKey}','1')">Got it — let's go</button>`;
-      document.getElementById('mOverlay').style.display = 'flex';
-    }
+    const box = document.getElementById('mBox');
+    box.innerHTML = `<div class="alert-hd">⚠ Critical — read before you start this act</div>`
+      + act.alerts.map(a => `<div class="alert-item"><div class="alert-title">${esc(a.title)}</div><div class="alert-body">${esc(a.body)}</div></div>`).join('')
+      + `<button class="alert-ok" onclick="document.getElementById('mOverlay').style.display='none'">Got it — let's go</button>`;
+    document.getElementById('mOverlay').style.display = 'flex';
   }
 }
 function initSelector() {

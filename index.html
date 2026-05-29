@@ -630,45 +630,43 @@ function buildGearPage() {
 
   const phases = [
     {
-      label: 'Acts 1–4', color: 'var(--passive)', note: 'Full Armor only. EV/ES does NOT benefit Hollow Palm. More Attack Speed does not benefit Combo.',
+      label: 'Acts 1–4 — Full Armor', when: 'KEEP FULL ARMOR. EV/ES does not benefit Hollow Palm.', color: 'var(--passive)',
       slots: [
-        { slot: 'Weapon', icon: '⚔', base: 'Best Quarterstaff you find', stats: 'Highest DPS. Drop for bare hands when Hollow Palm unlocked (~lvl 22). Pick back up if staff DPS > Hollow Palm.' },
-        { slot: 'Body', icon: '🧥', base: 'Rusted Cuirass → any Armour chest', stats: 'Life + Resistances. Full Armor base.' },
-        { slot: 'Helmet', icon: '⛑', base: 'Soldier Greathelm', stats: 'Life + Resistances. Full Armor base.' },
-        { slot: 'Gloves', icon: '🧤', base: 'Riveted Mitts', stats: '★ + to Level of All Melee Skills (biggest DPS upgrade). Flat Elemental Damage to Attacks.' },
-        { slot: 'Boots', icon: '👢', base: 'Rough Greaves', stats: 'Get 10%+ Movement Speed ASAP. Aim for 20-30% by Act 3.' },
-        { slot: 'Amulet', icon: '📿', base: 'Amber Amulet', stats: '★ + to Level of All Melee Skills. Best stat on amulet.' },
-        { slot: 'Rings', icon: '💍', base: 'Iron Ring × 2', stats: '★ Flat Elemental Damage to Attacks. Resistances to cap.' },
-        { slot: 'Belt', icon: '🪢', base: 'Any', stats: 'Life + Strength + Resistances.' },
-        { slot: 'Weapon Set 2', icon: '🔱', base: 'Voltfang Talisman (Act 4)', stats: 'Req Lvl 46 · 53 STR · 38 INT · 21% Shock Magnitude. Buy on trade.' },
+        { slot: 'Weapon', when: 'Acts 1–4', color: 'var(--passive)', base: 'Best Quarterstaff you find', stats: 'Upgrade often. Drop weapon for bare hands at Hollow Palm (~lvl 22). If a staff drops that beats Hollow Palm DPS, equip it + use Whirling Assault.' },
+        { slot: 'Body Armour', when: 'Acts 1–4', color: 'var(--passive)', base: 'Rusted Cuirass', stats: 'Life · Resistances · Full Armor base.' },
+        { slot: 'Helmet', when: 'Acts 1–4', color: 'var(--passive)', base: 'Soldier Greathelm', stats: 'Life · Resistances · Full Armor base.' },
+        { slot: 'Gloves', when: 'Acts 1–4', color: 'var(--gem-skill)', base: 'Riveted Mitts', stats: '★ PRIORITY STAT: + to Level of All Melee Skills — biggest DPS upgrade. Also: Flat Elemental Damage to Attacks.' },
+        { slot: 'Boots', when: 'Acts 1–4', color: 'var(--gem-skill)', base: 'Rough Greaves', stats: '★ Get 10%+ Movement Speed ASAP. Aim 20–30% by Act 3.' },
+        { slot: 'Amulet', when: 'Acts 1–4', color: 'var(--gem-skill)', base: 'Amber Amulet', stats: '★ + to Level of All Melee Skills — best stat on amulet.' },
+        { slot: 'Rings × 2', when: 'Acts 1–4', color: 'var(--gem-skill)', base: 'Iron Ring', stats: '★ Flat Elemental Damage to Attacks. Resistances to cap 75%.' },
+        { slot: 'Belt', when: 'Acts 1–4', color: 'var(--passive)', base: 'Any', stats: 'Life · Strength · Resistances.' },
+        { slot: 'Weapon Set 2', when: 'Act 4', color: 'var(--boss)', base: 'Voltfang Talisman', stats: 'Req Lvl 46 · 53 STR · 38 INT · 21% Shock Magnitude. Buy on trade. Lock to weapon set 2.' },
       ]
     },
     {
-      label: 'Interludes → Maps', color: 'var(--accent)', note: 'NOW swap to Evasion + Energy Shield. Slowly replace all armor slots. Keep same stat priorities.',
+      label: 'Interludes → Maps — Swap to EV/ES', when: 'NOW swap. Slowly replace all armor slots with Evasion + Energy Shield bases.', color: 'var(--accent)',
       slots: [
-        { slot: 'Body', icon: '🧥', base: 'Corsair Vest (EV/ES)', stats: 'Highest EV/ES you can get. Resistances.' },
-        { slot: 'Helmet', icon: '⛑', base: 'EV/ES Helmet', stats: 'EV/ES + Life + Resistances.' },
-        { slot: 'Gloves', icon: '🧤', base: 'EV/ES Gloves', stats: '★ + to Level of All Melee Skills. Flat Elemental Damage.' },
-        { slot: 'Boots', icon: '👢', base: 'EV/ES Boots', stats: '20-30% Movement Speed. Resistances.' },
-        { slot: 'Amulet', icon: '📿', base: 'Any', stats: '★ + to Level of All Melee Skills. Spirit bonus if available.' },
-        { slot: 'Rings', icon: '💍', base: 'Any', stats: 'Flat Elemental Damage + Resistances.' },
+        { slot: 'Body Armour', when: 'Interludes+', color: 'var(--accent)', base: 'Corsair Vest (EV/ES)', stats: 'Highest Evasion + Energy Shield you can find. Resistances.' },
+        { slot: 'Helmet', when: 'Interludes+', color: 'var(--accent)', base: 'EV/ES Helmet', stats: 'Evasion + ES · Life · Resistances.' },
+        { slot: 'Gloves', when: 'Interludes+', color: 'var(--gem-skill)', base: 'EV/ES Gloves', stats: '★ + to Level of All Melee Skills · Flat Elemental Damage.' },
+        { slot: 'Boots', when: 'Interludes+', color: 'var(--gem-skill)', base: 'EV/ES Boots', stats: '20–30% Movement Speed · Resistances.' },
+        { slot: 'Amulet', when: 'Interludes+', color: 'var(--gem-skill)', base: 'Any', stats: '★ + to Level of All Melee Skills · Spirit bonus if available.' },
+        { slot: 'Rings × 2', when: 'Interludes+', color: 'var(--gem-skill)', base: 'Any', stats: 'Flat Elemental Damage · Resistances.' },
       ]
     }
   ];
 
   const phaseHtml = phases.map(ph => `
     <div style="margin-bottom:1.2rem">
-      <div style="font-size:0.75rem;font-weight:800;color:${ph.color};letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem;padding:0.3rem 0.7rem;background:rgba(0,0,0,0.3);border-left:3px solid ${ph.color};border-radius:3px">${ph.label}</div>
-      <div style="font-size:0.65rem;color:var(--text-dim);margin-bottom:0.55rem;padding:0 0.4rem">${ph.note}</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:0.45rem">
+      <div style="font-size:0.68rem;font-weight:800;color:${ph.color};letter-spacing:0.1em;text-transform:uppercase;padding:0.35rem 0.8rem;border-left:3px solid ${ph.color};background:rgba(0,0,0,0.25);border-radius:3px;margin-bottom:0.3rem">${ph.label}</div>
+      <div style="font-size:0.63rem;color:var(--text-dim);margin-bottom:0.55rem;padding:0 0.2rem">${ph.when}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:0.5rem">
         ${ph.slots.map(s=>`
-          <div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;padding:0.5rem 0.7rem;display:flex;gap:0.6rem;align-items:flex-start">
-            <div style="font-size:1.2rem;flex-shrink:0;margin-top:2px">${s.icon}</div>
-            <div>
-              <div style="font-size:0.7rem;font-weight:800;color:var(--text-bright)">${s.slot}</div>
-              <div style="font-size:0.65rem;color:var(--accent);margin:1px 0">${s.base}</div>
-              <div style="font-size:0.62rem;color:var(--text-dim);line-height:1.45">${s.stats}</div>
-            </div>
+          <div style="background:var(--bg-panel);border:1px solid var(--border);border-left:3px solid ${s.color};border-radius:8px;padding:0.6rem 0.8rem">
+            <div style="font-size:0.85rem;font-weight:800;color:${s.color};margin-bottom:0.12rem">${s.slot}</div>
+            <div style="font-size:0.6rem;color:var(--gem-skill);font-weight:700;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:0.3rem">${s.when}</div>
+            <div style="font-size:0.72rem;color:var(--accent);font-weight:700;margin-bottom:0.2rem">${s.base}</div>
+            <div style="font-size:0.68rem;color:var(--text);line-height:1.5">${s.stats}</div>
           </div>`).join('')}
       </div>
     </div>`).join('');

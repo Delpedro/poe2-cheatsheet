@@ -498,6 +498,7 @@ function renderBuild(b) {
   const allTabs = [
     ...b.acts.map(a => ({id:a.id,label:a.label,sub:a.sub})),
     {id:'interlude',label:'Interlude',sub:'Events'},
+    {id:'passives',label:'Passives',sub:'Path'},
     {id:'ascendancy',label:'Ascendancy',sub:'All Nodes'},
     {id:'gear',label:'Gear',sub:'Per Act'},
     {id:'endgame',label:'Endgame',sub:'Hollow Focus'},
@@ -515,6 +516,7 @@ function renderBuild(b) {
   pc.innerHTML = '';
   b.acts.forEach(a => pc.appendChild(buildActPage(a)));
   if (b.interlude) pc.appendChild(buildInterludePage(b.interlude));
+  pc.appendChild(buildPassivesPage());
   pc.appendChild(buildAscendancyPage());
   pc.appendChild(buildGearPage());
   pc.appendChild(buildEndgamePage(b.endgame));
@@ -621,6 +623,66 @@ function buildInterludePage(il) {
       <div class="events-card"><div class="events-title">★ Events to Grab</div>${evHtml}</div>
       <div class="choices-card"><div class="choices-title">⚑ Choices</div>${chHtml}</div>
     </div>`;
+  return p;
+}
+
+function buildPassivesPage() {
+  const p = document.createElement('div');
+  p.className = 'page'; p.id = 'passives';
+
+  const acts = [
+    { label: 'Act 1', sub: 'LVL 1–14', color: 'var(--passive)', nodes: [
+      { name: 'Skill Speed', why: 'Faster attacks = more stagger buildup. More hits = more power charges.' },
+      { name: 'Attack Damage', why: 'Raw damage increase on all attacks. Take early.' },
+      { name: 'Atk + Skill Speed', why: 'Combined node — efficient pathing, both stats matter.' },
+      { name: 'Shock Chance', why: 'Shock makes enemies take more damage. Feeds the entire build.' },
+      { name: 'Lightning Damage', why: 'Your main damage type throughout campaign.' },
+      { name: 'STR Node', why: 'Required to equip the Wyvern Talisman in weapon set 2 for Wing Blast.' },
+      { name: 'DEX / INT Attributes', why: 'Meets gem and gear requirements as you level.' },
+      { name: '→ Hollow Palm Technique', why: 'MAIN GOAL of Act 1. All attack nodes lead here. Bare hands + high HP = massive damage multiplier.' },
+    ]},
+    { label: 'Act 2', sub: 'LVL 14–28', color: 'var(--gem-skill)', nodes: [
+      { name: 'Hollow Palm Technique', why: 'KEYSTONE — take immediately when reachable (~lvl 13). Unequip weapon. Bare hands + HP = huge DPS boost.' },
+      { name: 'Reduced Mana Cost', why: 'Mana efficiency until Clarity I arrives in Act 3. Remove these nodes in Act 3.' },
+      { name: 'Ailment Chance', why: 'Better shock application from Storm Wave. More reliable power charge generation.' },
+      { name: 'Elemental Damage', why: 'Scales all lightning damage. Core scaling stat.' },
+      { name: 'Shock on Consume → Reapply', why: 'CRITICAL — take this before Jamanra. Lets Siphoning Strike re-apply shock after consuming it. Makes the boss trivial.' },
+    ]},
+    { label: 'Act 3', sub: 'LVL 28–40', color: 'var(--accent)', nodes: [
+      { name: 'Remove Mana Cost / Regen nodes', why: 'Clarity I from Herald of Thunder now covers all mana. Free up those points for damage nodes.' },
+      { name: 'Lightning Damage', why: 'Continue scaling your main damage type.' },
+      { name: 'Lightning Penetration', why: 'Enemies have lightning resistance. Penetration ignores it — direct damage increase.' },
+      { name: 'Killer Instinct', why: 'Bonus damage when enemies have no buffs — applies frequently.' },
+      { name: 'Magnitude of Shock', why: 'Stronger shock = bigger damage multiplier on shocked enemies.' },
+      { name: 'Mana Regeneration', why: 'Sustain support. Take if running low between Clarity and removal of old mana nodes.' },
+    ]},
+    { label: 'Act 4+', sub: 'LVL 41+', color: 'var(--gem-spirit)', nodes: [
+      { name: 'Evasion Rating', why: 'Switching to EV/ES gear at Interludes. Build Evasion nodes now to match.' },
+      { name: 'Energy Shield', why: 'Primary defence in maps. Build ES pool — aim for 3000+ by early maps.' },
+      { name: 'Tankiness Nodes', why: 'Survival focus. You will die without investing here before maps.' },
+      { name: 'Lightning Damage', why: 'Continue scaling. More lightning = more damage with Charged Staff and Falling Thunder.' },
+      { name: 'Shock Magnitude', why: 'Endgame damage multiplier. Whirling Assault + shocked enemies = massive DPS.' },
+    ]},
+  ];
+
+  const actsHtml = acts.map(a => `
+    <div style="margin-bottom:1.2rem">
+      <div style="font-size:0.68rem;font-weight:800;color:${a.color};letter-spacing:0.1em;text-transform:uppercase;padding:0.35rem 0.8rem;border-left:3px solid ${a.color};background:rgba(0,0,0,0.25);border-radius:3px;margin-bottom:0.55rem">${a.label} <span style="opacity:0.6;font-weight:400">${a.sub}</span></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:0.5rem">
+        ${a.nodes.map((n,i) => `
+          <div style="background:var(--bg-panel);border:1px solid var(--border);border-left:3px solid ${a.color};border-radius:8px;padding:0.6rem 0.8rem">
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem">
+              <span style="background:${a.color};color:#08080b;font-size:0.55rem;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</span>
+              <span style="font-size:0.85rem;font-weight:800;color:${a.color}">${n.name}</span>
+            </div>
+            <div style="font-size:0.7rem;color:var(--text);line-height:1.5">${n.why}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  p.innerHTML = `
+    <div class="act-head"><h2>Passive Tree — Key Milestones</h2><span class="lvl">PATH PER ACT</span></div>
+    <div style="margin-top:0.5rem">${actsHtml}</div>`;
   return p;
 }
 

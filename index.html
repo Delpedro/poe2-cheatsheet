@@ -28,6 +28,7 @@ body { font-family: -apple-system,'Segoe UI',system-ui,sans-serif; background: v
 .sz-btn { background: var(--bg-elev); border: 1px solid var(--border-bright); color: var(--text-dim); font-family: inherit; font-weight: 700; cursor: pointer; border-radius: 4px; padding: 2px 7px; font-size: 10px; transition: all 0.12s; }
 .sz-btn:hover { border-color: var(--accent); color: var(--text-bright); }
 .sz-btn.active { background: var(--accent); border-color: var(--accent); color: #08080b; }
+.launch-btn { background: var(--boss); border-color: var(--boss); color: #fff; padding: 2px 10px; }
 
 .tabs { display: flex; background: #08080b; border-bottom: 1px solid var(--border); padding: 0 1.2rem; position: sticky; top: 46px; z-index: 99; overflow-x: auto; }
 .tab { padding: 0.5rem 0.85rem; color: var(--text-dim); cursor: pointer; font-size: 0.75rem; font-weight: 700; border-bottom: 3px solid transparent; display: flex; flex-direction: column; align-items: center; gap: 1px; white-space: nowrap; transition: color 0.12s; }
@@ -199,6 +200,7 @@ body { font-family: -apple-system,'Segoe UI',system-ui,sans-serif; background: v
     </div>
     <select id="bSelect" class="build-select" title="Select build" onchange="switchBuild(this.value)"></select>
     <a id="bLink" href="#" target="_blank">Guide →</a>
+    <button type="button" class="sz-btn launch-btn" onclick="openLaunchChecklist()">⚡ Launch</button>
   </div>
 </div>
 <div class="tabs" id="tabBar"></div>
@@ -739,6 +741,48 @@ function copyEl(id,btn){ navigator.clipboard.writeText(document.getElementById(i
 function copyTA(id,btn){ navigator.clipboard.writeText(document.getElementById(id)?.value||'').then(()=>flash(btn)); }
 function flash(btn){ const o=btn.textContent; btn.textContent='✓ Copied'; btn.classList.add('copied'); setTimeout(()=>{btn.textContent=o;btn.classList.remove('copied');},1500); }
 function closeMifBg(e){ if(e.target.id==='mOverlay') document.getElementById('mOverlay').style.display='none'; }
+function openLaunchChecklist() {
+  const items = [
+    { section: '1. Filter', steps: [
+      'Open Tools tab → click <b>★ Loot Filter →</b> link',
+      'Download the filter file',
+      'Move to: <code>Documents\\My Games\\Path of Exile 2</code>',
+      'In-game: Options → UI → Loot Filter → select it',
+    ]},
+    { section: '2. Game Options', steps: [
+      'Options → UI → Enable <b>Show Item Level</b>',
+      'Options → UI → Enable <b>Advanced Mod Descriptions</b>',
+      'Options → Graphics → set to Performance for launch day lag',
+    ]},
+    { section: '3. Keybinds (Controller)', steps: [
+      '<b>A</b> → Main Attack (Quarterstaff Strike)',
+      '<b>B</b> → Killing Palm',
+      '<b>X</b> → Frost Bomb',
+      '<b>Y</b> → Frozen Locust',
+      '<b>LT</b> → Falling Thunder',
+      '<b>RT</b> → Dodge / Sprint',
+      '<b>LB</b> → Health Flask',
+      '<b>RB</b> → Mana Flask',
+      '<b>D-pad</b> → Wind Blast / Wing Blast / Pounce / Devour',
+    ]},
+    { section: '4. First Thing In-Game', steps: [
+      'Select <b>Return of the Ancients (Trade)</b> league — not Standard',
+      'Create Monk',
+      'At shore: kill Bloated Miller → grab <b>Falling Thunder</b>',
+      'Grab <b>Killing Palm</b> from quest reward',
+      'Hit vendor in first town — grab <b>Scrolls of Wisdom</b>',
+      'Check Act 1 tab on site — follow gems in order',
+    ]},
+  ];
+  const html = items.map(s => `
+    <div style="margin-bottom:1rem">
+      <div style="font-size:0.7rem;font-weight:800;color:var(--gem-skill);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.4rem">${s.section}</div>
+      ${s.steps.map(step => `<div style="font-size:0.75rem;color:var(--text);line-height:1.6;padding:0.15rem 0 0.15rem 0.8rem;border-left:2px solid var(--border)">→ ${step}</div>`).join('')}
+    </div>`).join('');
+  const box = document.getElementById('mBox');
+  box.innerHTML = `<div style="font-size:1rem;font-weight:800;color:var(--boss);margin-bottom:1rem">⚡ Launch Checklist</div>${html}<button onclick="document.getElementById('mOverlay').style.display='none'" class="alert-ok">Ready — let's go</button>`;
+  document.getElementById('mOverlay').style.display = 'flex';
+}
 function openGemModal(name, source, note) {
   const box = document.getElementById('mBox');
   box.innerHTML = `<div style="font-size:1rem;font-weight:800;color:var(--gem-skill);margin-bottom:0.5rem">${name}</div>${source?`<div style="font-size:0.7rem;color:var(--text-dim);margin-bottom:0.6rem">${source}</div>`:''}<div style="font-size:0.82rem;color:var(--text);line-height:1.6">${note}</div><button onclick="document.getElementById('mOverlay').style.display='none'" style="margin-top:1rem;padding:0.4rem 1rem;background:var(--bg-elev);border:1px solid var(--border-bright);color:var(--text);font-family:inherit;font-size:0.75rem;border-radius:4px;cursor:pointer">Close</button>`;

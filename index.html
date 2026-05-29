@@ -499,6 +499,7 @@ function renderBuild(b) {
     ...b.acts.map(a => ({id:a.id,label:a.label,sub:a.sub})),
     {id:'interlude',label:'Interlude',sub:'Events'},
     {id:'ascendancy',label:'Ascendancy',sub:'All Nodes'},
+    {id:'gear',label:'Gear',sub:'Per Act'},
     {id:'endgame',label:'Endgame',sub:'Hollow Focus'},
     {id:'tools',label:'Tools',sub:'Links · Regex'}
   ];
@@ -515,6 +516,7 @@ function renderBuild(b) {
   b.acts.forEach(a => pc.appendChild(buildActPage(a)));
   if (b.interlude) pc.appendChild(buildInterludePage(b.interlude));
   pc.appendChild(buildAscendancyPage());
+  pc.appendChild(buildGearPage());
   pc.appendChild(buildEndgamePage(b.endgame));
   pc.appendChild(buildToolsPage(b));
 
@@ -619,6 +621,61 @@ function buildInterludePage(il) {
       <div class="events-card"><div class="events-title">★ Events to Grab</div>${evHtml}</div>
       <div class="choices-card"><div class="choices-title">⚑ Choices</div>${chHtml}</div>
     </div>`;
+  return p;
+}
+
+function buildGearPage() {
+  const p = document.createElement('div');
+  p.className = 'page'; p.id = 'gear';
+
+  const phases = [
+    {
+      label: 'Acts 1–4', color: 'var(--passive)', note: 'Full Armor only. EV/ES does NOT benefit Hollow Palm. More Attack Speed does not benefit Combo.',
+      slots: [
+        { slot: 'Weapon', icon: '⚔', base: 'Best Quarterstaff you find', stats: 'Highest DPS. Drop for bare hands when Hollow Palm unlocked (~lvl 22). Pick back up if staff DPS > Hollow Palm.' },
+        { slot: 'Body', icon: '🧥', base: 'Rusted Cuirass → any Armour chest', stats: 'Life + Resistances. Full Armor base.' },
+        { slot: 'Helmet', icon: '⛑', base: 'Soldier Greathelm', stats: 'Life + Resistances. Full Armor base.' },
+        { slot: 'Gloves', icon: '🧤', base: 'Riveted Mitts', stats: '★ + to Level of All Melee Skills (biggest DPS upgrade). Flat Elemental Damage to Attacks.' },
+        { slot: 'Boots', icon: '👢', base: 'Rough Greaves', stats: 'Get 10%+ Movement Speed ASAP. Aim for 20-30% by Act 3.' },
+        { slot: 'Amulet', icon: '📿', base: 'Amber Amulet', stats: '★ + to Level of All Melee Skills. Best stat on amulet.' },
+        { slot: 'Rings', icon: '💍', base: 'Iron Ring × 2', stats: '★ Flat Elemental Damage to Attacks. Resistances to cap.' },
+        { slot: 'Belt', icon: '🪢', base: 'Any', stats: 'Life + Strength + Resistances.' },
+        { slot: 'Weapon Set 2', icon: '🔱', base: 'Voltfang Talisman (Act 4)', stats: 'Req Lvl 46 · 53 STR · 38 INT · 21% Shock Magnitude. Buy on trade.' },
+      ]
+    },
+    {
+      label: 'Interludes → Maps', color: 'var(--accent)', note: 'NOW swap to Evasion + Energy Shield. Slowly replace all armor slots. Keep same stat priorities.',
+      slots: [
+        { slot: 'Body', icon: '🧥', base: 'Corsair Vest (EV/ES)', stats: 'Highest EV/ES you can get. Resistances.' },
+        { slot: 'Helmet', icon: '⛑', base: 'EV/ES Helmet', stats: 'EV/ES + Life + Resistances.' },
+        { slot: 'Gloves', icon: '🧤', base: 'EV/ES Gloves', stats: '★ + to Level of All Melee Skills. Flat Elemental Damage.' },
+        { slot: 'Boots', icon: '👢', base: 'EV/ES Boots', stats: '20-30% Movement Speed. Resistances.' },
+        { slot: 'Amulet', icon: '📿', base: 'Any', stats: '★ + to Level of All Melee Skills. Spirit bonus if available.' },
+        { slot: 'Rings', icon: '💍', base: 'Any', stats: 'Flat Elemental Damage + Resistances.' },
+      ]
+    }
+  ];
+
+  const phaseHtml = phases.map(ph => `
+    <div style="margin-bottom:1.2rem">
+      <div style="font-size:0.75rem;font-weight:800;color:${ph.color};letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.3rem;padding:0.3rem 0.7rem;background:rgba(0,0,0,0.3);border-left:3px solid ${ph.color};border-radius:3px">${ph.label}</div>
+      <div style="font-size:0.65rem;color:var(--text-dim);margin-bottom:0.55rem;padding:0 0.4rem">${ph.note}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:0.45rem">
+        ${ph.slots.map(s=>`
+          <div style="background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;padding:0.5rem 0.7rem;display:flex;gap:0.6rem;align-items:flex-start">
+            <div style="font-size:1.2rem;flex-shrink:0;margin-top:2px">${s.icon}</div>
+            <div>
+              <div style="font-size:0.7rem;font-weight:800;color:var(--text-bright)">${s.slot}</div>
+              <div style="font-size:0.65rem;color:var(--accent);margin:1px 0">${s.base}</div>
+              <div style="font-size:0.62rem;color:var(--text-dim);line-height:1.45">${s.stats}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  p.innerHTML = `
+    <div class="act-head"><h2>Gear Guide</h2><span class="lvl">PER PHASE</span></div>
+    <div style="margin-top:0.5rem">${phaseHtml}</div>`;
   return p;
 }
 

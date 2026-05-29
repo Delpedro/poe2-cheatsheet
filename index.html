@@ -399,8 +399,9 @@ const BUILDS = [
         id: 'act4', label: 'Act 4+', sub: 'LVL 41+',
         heading: 'Act 4 — Whirling Swap',
         alerts: [
-          { title: '⚠ GEAR SWAP — Do this immediately', body: 'Switch ALL gear from full Armor → Evasion + Energy Shield. Weapon Set 2: equip Voltfang Talisman (Req Lvl 46 · 53 STR · 38 INT · 21% Shock Magnitude). Body armour: Corsair Vest. Trade league: buy these on trade site if you don\'t have them. If you skip this your defences are completely wrong for the rest of the act.' },
-          { title: '⚠ Spirit: Drop Clarity + Cannibalism', body: 'Remove Clarity I and Cannibalism I from Herald of Thunder. Replace both with Ghost Dance + Maim. Ghost Dance gives evasion-based regen — only works properly once you have Evasion/ES gear.' },
+          { title: '⚠ Weapon Set 2 — Voltfang Talisman', body: 'Equip Voltfang Talisman in Weapon Set 2 (Req Lvl 46 · 53 STR · 38 INT · 21% Shock Magnitude). Trade league: buy on trade site if needed.' },
+          { title: 'Gear: Stay on Full Armor', body: 'Keep Full Armor through all of Act 4. You do NOT swap to Evasion + ES yet — that happens at Interludes towards mapping. Hollow Palm does not benefit from EV/ES.' },
+          { title: '⚠ Staff tip', body: 'If you find a Quarterstaff that exceeds your Hollow Palm Technique damage, equip it and use Whirling Assault for extra Range.' },
         ],
         loop: { steps: ['Whirling Assault', 'Staggering Palm (30s)', 'Killing Palm', 'Charged Staff'], note: 'WA clears everything. Stack Staggering Palm buff to 30s against enemies. Killing Palm culls for power charges → Charged Staff. Tempest Bell for bosses.' },
         passives: ['Evasion Rating', 'Energy Shield', 'Tankiness Nodes', 'Lightning Damage', 'Shock Magnitude'],
@@ -451,6 +452,7 @@ const BUILDS = [
       ],
       choices: [
         { pick: '15% Global Defences ★', alts: ['+5 All Attributes', '+5 All Elemental Res', '12% Cooldown Recovery', '3% Move Speed', '20% Presence AoE', '5% XP (inverted drawbacks)'], loc: "Qimah — Tabana's Pillar · 7 choices, swappable anytime" },
+        { pick: 'Swap gear to Evasion + Energy Shield now', loc: 'Interludes onwards — Full Armor no longer needed. Slowly replace all slots with EV/ES bases.' },
       ]
     },
     endgame: {
@@ -763,9 +765,16 @@ function openLaunchChecklist() {
       '<b>RT</b> → Dodge / Sprint',
       '<b>LB</b> → Health Flask',
       '<b>RB</b> → Mana Flask',
-      '<b>D-pad</b> → Wind Blast / Wing Blast / Pounce / Devour',
+      '<b>D-pad / Paddles</b> → Wind Blast, Wing Blast, Pounce (assign as needed)',
     ]},
-    { section: '4. First Thing In-Game', steps: [
+    { section: '4. Starter Gear (Full Armor — keep until Interludes)', steps: [
+      '<b>Body</b> → Rusted Cuirass',
+      '<b>Helmet</b> → Soldier Greathelm',
+      '<b>Gloves</b> → Riveted Mitts',
+      '<b>Boots</b> → Rough Greaves',
+      'Stay on Full Armor Acts 1-4. Swap to EV/ES at Interludes.',
+    ]},
+    { section: '5. First Thing In-Game', steps: [
       'Select <b>Return of the Ancients (Trade)</b> league — not Standard',
       'Create Monk',
       'At shore: kill Bloated Miller → grab <b>Falling Thunder</b>',

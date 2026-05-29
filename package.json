@@ -1,0 +1,11 @@
+{
+  "name": "poe2-cheatsheet",
+  "version": "1.0.0",
+  "description": "PoE2 league start cheatsheet — data-driven, multi-build",
+  "scripts": {
+    "start": "npx http-server -p 3000 -o --cors"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

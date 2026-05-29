@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PoE2 Cheatsheet</title>
+<style>
+:root {
+  --bg: #0c0c0e; --bg-panel: #141418; --bg-elev: #1a1a20;
+  --border: #252530; --border-bright: #333340;
+  --text: #d8d8e0; --text-dim: #7a7a88; --text-bright: #fff;
+  --accent: #6aaef5; --gem-skill: #f0a830; --gem-spirit: #be7ef8;
+  --gem-support: #58aad8; --item: #5ec878; --passive: #e87848;
+  --boss: #f05050; --done: #44aa55;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 17px; }
+body { font-family: -apple-system,'Segoe UI',system-ui,sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 0.55rem 1.2rem; background: #08080b; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; gap: 10px; flex-wrap: wrap; }
+.topbar h1 { font-size: 0.95rem; font-weight: 700; color: var(--text-bright); }
+.topbar .sub { font-size: 0.65rem; color: var(--text-dim); }
+.topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.build-select { background: var(--bg-elev); border: 1px solid var(--border-bright); color: var(--text); font-family: inherit; font-size: 0.7rem; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; }
+.topbar-right a { font-size: 0.75rem; color: var(--accent); text-decoration: none; font-weight: 600; white-space: nowrap; }
+.topbar-right a:hover { text-decoration: underline; }
+.size-toggle { display: flex; align-items: center; gap: 3px; }
+.sz-btn { background: var(--bg-elev); border: 1px solid var(--border-bright); color: var(--text-dim); font-family: inherit; font-weight: 700; cursor: pointer; border-radius: 4px; padding: 2px 7px; font-size: 10px; transition: all 0.12s; }
+.sz-btn:hover { border-color: var(--accent); color: var(--text-bright); }
+.sz-btn.active { background: var(--accent); border-color: var(--accent); color: #08080b; }
+
+.tabs { display: flex; background: #08080b; border-bottom: 1px solid var(--border); padding: 0 1.2rem; position: sticky; top: 46px; z-index: 99; overflow-x: auto; }
+.tab { padding: 0.5rem 0.85rem; color: var(--text-dim); cursor: pointer; font-size: 0.75rem; font-weight: 700; border-bottom: 3px solid transparent; display: flex; flex-direction: column; align-items: center; gap: 1px; white-space: nowrap; transition: color 0.12s; }
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--text-bright); border-bottom-color: var(--accent); }
+.tab .tsub { font-size: 0.6rem; color: var(--text-dim); font-weight: 400; }
+.tab.active .tsub { color: var(--accent); }
+
+.page { display: none; padding: 0.65rem 1rem 0.75rem; }
+.page.active { display: block; }
+
+.act-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.4rem; }
+.act-head h2 { font-size: 1.15rem; font-weight: 700; color: var(--text-bright); }
+.act-head .lvl { font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.15em; font-weight: 700; }
+
+.combat-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 0.2rem 0.32rem; padding: 0.32rem 0.75rem; margin-bottom: 0.32rem; background: rgba(106,174,245,0.05); border: 1px solid rgba(106,174,245,0.18); border-radius: 5px; }
+.cb-label { font-size: 0.58rem; color: var(--accent); font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; margin-right: 4px; }
+.cb-step { background: rgba(106,174,245,0.14); border: 1px solid rgba(106,174,245,0.3); padding: 0.18rem 0.6rem; color: var(--text-bright); font-weight: 700; border-radius: 4px; font-size: 0.78rem; white-space: nowrap; }
+.cb-arrow { color: var(--text-dim); font-size: 0.82rem; }
+.cb-note { font-size: 0.65rem; color: var(--text-dim); width: 100%; line-height: 1.4; margin-top: 2px; }
+
+.passive-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 0.2rem 0.28rem; padding: 0.25rem 0.75rem; margin-bottom: 0.4rem; background: rgba(232,120,72,0.05); border: 1px solid rgba(232,120,72,0.18); border-radius: 5px; }
+.pb-label { font-size: 0.58rem; color: var(--passive); font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; margin-right: 4px; }
+.pb-step { background: rgba(232,120,72,0.1); border: 1px solid rgba(232,120,72,0.22); color: var(--passive); padding: 0.15rem 0.48rem; border-radius: 3px; font-size: 0.65rem; font-weight: 700; white-space: nowrap; }
+.pb-arrow { color: var(--text-dim); font-size: 0.65rem; }
+
+/* 3-COLUMN LAYOUT */
+.act-grid { display: grid; grid-template-columns: 1.2fr 0.95fr 0.82fr; gap: 0.75rem; align-items: start; }
+.left-stack { display: flex; flex-direction: column; gap: 0.45rem; }
+/* Compact gems — notes in modal on click */
+.gnote { display: none; }
+.gem { cursor: pointer; }
+.gem:hover { background: rgba(106,174,245,0.04); }
+/* Gem number badge */
+.gem-num { min-width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; font-weight: 800; color: var(--text-dim); background: var(--bg-elev); border-radius: 3px; margin-right: 3px; align-self: center; }
+/* Critical tag */
+.tag-crit { color: var(--boss); border-color: rgba(240,80,80,0.4); background: rgba(240,80,80,0.1); }
+
+.panel { background: var(--bg-panel); border: 1px solid var(--border); padding: 0.75rem 0.85rem; border-radius: 8px; }
+.panel-hd { font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); font-weight: 800; margin-bottom: 0.55rem; padding-bottom: 0.42rem; border-bottom: 1px solid var(--border); }
+
+/* GEM ROWS — single-line compact */
+.gem { display: flex; align-items: center; gap: 0.35rem; padding: 0.18rem 0 0.18rem 0.45rem; border-left: 3px solid var(--gem-skill); border-bottom: 1px solid var(--border); }
+.gem:last-child { border-bottom: none; }
+.gem.sp  { border-left-color: var(--gem-spirit); }
+.gem.pas { border-left-color: var(--passive); }
+.gem.asc { border-left-color: var(--gem-spirit); }
+.gem-ico { width: 24px; height: 24px; border-radius: 3px; flex-shrink: 0; object-fit: cover; background: var(--bg-elev); }
+.gem-ico-ph { width: 24px; height: 24px; border-radius: 3px; flex-shrink: 0; background: var(--bg-elev); }
+.gem-txt { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 5px; }
+.gname { color: var(--gem-skill); font-weight: 800; font-size: 0.82rem; line-height: 1.4; }
+.gname.sp { color: var(--gem-spirit); }
+.gpair { color: var(--text-dim); font-weight: 500; font-size: 0.72rem; }
+.gwhere { font-size: 0.58rem; color: var(--text-dim); }
+.gnote  { display: none; }
+.tag { display: inline-block; font-size: 0.52rem; letter-spacing: 0.04em; padding: 1px 4px; border: 1px solid var(--border-bright); color: var(--text-dim); text-transform: uppercase; margin-left: 3px; vertical-align: middle; border-radius: 3px; font-weight: 700; }
+.tag-w { color: var(--passive);    border-color: rgba(232,120,72,0.35); }
+.tag-s { color: var(--gem-spirit); border-color: rgba(190,126,248,0.35); }
+.tag-a { color: var(--gem-spirit); border-color: rgba(190,126,248,0.35); }
+
+/* SUPPORT CARDS */
+.sc { background: var(--bg-elev); border: 1px solid var(--border); border-left: 3px solid var(--gem-skill); border-radius: 5px; padding: 0.42rem 0.58rem; margin-bottom: 0.38rem; }
+.sc:last-child { margin-bottom: 0; }
+.sc.sp { border-left-color: var(--gem-spirit); }
+.sc-hd { display: flex; align-items: center; gap: 6px; margin-bottom: 0.25rem; }
+.sc-ico { width: 22px; height: 22px; border-radius: 3px; flex-shrink: 0; object-fit: cover; background: var(--bg-panel); }
+.sc-title { font-size: 0.8rem; color: var(--gem-skill); font-weight: 800; }
+.sc.sp .sc-title { color: var(--gem-spirit); }
+.sc-list { list-style: none; font-size: 0.72rem; color: var(--text); line-height: 1.55; }
+.sc-list li { display: flex; align-items: center; gap: 4px; padding: 1px 0; }
+.sc-list .sp-ico { width: 18px; height: 18px; border-radius: 2px; flex-shrink: 0; object-fit: cover; background: var(--bg-panel); }
+.sc-list .sp-dot { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--gem-support); font-weight: 800; font-size: 12px; }
+
+/* RIGHT COLUMN — BOSS / EVENTS / CHOICES */
+.right-stack { display: flex; flex-direction: column; gap: 0.55rem; }
+.boss-card { background: rgba(240,80,80,0.06); border: 1px solid rgba(240,80,80,0.22); border-left: 3px solid var(--boss); border-radius: 5px; padding: 0.48rem 0.6rem; }
+.boss-name { font-size: 0.68rem; color: var(--boss); font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.3rem; }
+.boss-steps { list-style: none; font-size: 0.72rem; color: var(--text); line-height: 1.55; }
+.boss-steps li { padding: 0 0 0 0.85rem; position: relative; }
+.boss-steps li::before { content: '→'; position: absolute; left: 0; color: var(--boss); font-weight: 800; font-size: 0.65rem; }
+.events-card { background: rgba(94,200,120,0.05); border: 1px solid rgba(94,200,120,0.2); border-left: 3px solid var(--item); border-radius: 5px; padding: 0.48rem 0.6rem; }
+.events-title { font-size: 0.58rem; color: var(--item); font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.3rem; }
+.ev-item { padding: 0.3rem 0 0.3rem 0.95rem; position: relative; border-bottom: 1px solid var(--border); font-size: 0.68rem; line-height: 1.35; }
+.ev-item:last-child { border-bottom: none; }
+.ev-item::before { content: '★'; position: absolute; left: 0; color: var(--item); font-size: 0.52rem; top: 0.48rem; }
+.ev-reward { color: var(--item); font-weight: 700; }
+.ev-loc { color: var(--text-dim); font-size: 0.62rem; margin-left: 5px; }
+.choices-card { background: rgba(240,168,48,0.05); border: 1px solid rgba(240,168,48,0.2); border-left: 3px solid var(--gem-skill); border-radius: 5px; padding: 0.48rem 0.6rem; }
+.choices-title { font-size: 0.58rem; color: var(--gem-skill); font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.3rem; }
+.ch-item { padding: 0.3rem 0 0.3rem 0.95rem; position: relative; border-bottom: 1px solid var(--border); font-size: 0.68rem; line-height: 1.35; }
+.ch-item:last-child { border-bottom: none; }
+.ch-item::before { content: '→'; position: absolute; left: 0; color: var(--gem-skill); font-weight: 800; font-size: 0.65rem; top: 0.3rem; }
+.ch-pick { color: var(--done); font-weight: 700; display: block; }
+.ch-loc { color: var(--text-dim); font-size: 0.62rem; display: block; }
+.ch-alts { font-size: 0.6rem; color: var(--text-dim); margin-top: 0.18rem; line-height: 1.55; }
+.ch-alts span { display: inline-block; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; margin: 1px 2px 1px 0; }
+.ch-item.perm { background: rgba(240,80,80,0.07); border-left: 3px solid var(--boss); padding-left: 0.65rem; margin-left: -3px; }
+.ch-item.perm .ch-pick { color: var(--boss); }
+.perm-warn { font-size: 0.5rem; letter-spacing: 0.1em; font-weight: 800; color: var(--boss); text-transform: uppercase; display: block; margin-bottom: 2px; }
+
+/* SUPPORT PRIORITY */
+.pri-badge { font-size: 0.45rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 800; padding: 1px 5px; border-radius: 2px; margin-left: 5px; vertical-align: middle; }
+.pri-badge.core { background: rgba(240,168,48,0.25); color: var(--gem-skill); }
+.pri-badge.sec  { background: rgba(106,174,245,0.18); color: var(--accent); }
+.pri-badge.util { background: rgba(122,122,136,0.15); color: var(--text-dim); }
+.sc.pri-core { border-left-color: var(--gem-skill); }
+.sc.pri-sec  { border-left-color: var(--accent); }
+.sc.pri-util { border-left-color: var(--border-bright); opacity: 0.6; }
+
+/* EVENT CHECKBOXES */
+.ev-item { display: flex; align-items: flex-start; gap: 0.45rem; }
+.ev-item::before { display: none; }
+.ev-check { width: 14px; height: 14px; accent-color: var(--done); cursor: pointer; flex-shrink: 0; margin-top: 0.28rem; }
+.ev-item.done { opacity: 0.3; }
+.ev-item.done .ev-reward { text-decoration: line-through; }
+
+/* INTERLUDE */
+.il-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+/* ENDGAME */
+.eg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.6rem; }
+
+/* TOOLS */
+.tools-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 0.85rem; }
+.rx-block { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 5px; padding: 0.6rem 0.72rem; margin-bottom: 0.6rem; }
+.rx-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.3rem; }
+.rx-lt { font-size: 0.72rem; color: var(--gem-skill); font-weight: 700; }
+.rx-src { font-size: 0.6rem; color: var(--text-dim); font-style: italic; }
+.rx-code { background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 0.42rem 0.55rem; font-family: 'SF Mono',Consolas,Monaco,monospace; font-size: 0.7rem; color: var(--text-bright); word-break: break-all; line-height: 1.5; margin-bottom: 0.4rem; }
+.copy-btn { padding: 0.25rem 0.65rem; background: var(--accent); border: none; color: #08080b; font-family: inherit; font-size: 0.65rem; font-weight: 700; cursor: pointer; border-radius: 4px; letter-spacing: 0.04em; }
+.copy-btn:hover { background: #8cc4ff; }
+.copy-btn.copied { background: var(--done); }
+.dl-btn { padding: 0.25rem 0.65rem; background: var(--bg-elev); border: 1px solid var(--item); color: var(--item); font-family: inherit; font-size: 0.65rem; font-weight: 700; cursor: pointer; border-radius: 4px; letter-spacing: 0.04em; margin-left: 8px; }
+.dl-btn:hover { background: rgba(94,200,120,0.15); }
+.rx-edit { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 0.42rem 0.55rem; font-family: 'SF Mono',Consolas,Monaco,monospace; font-size: 0.7rem; color: var(--text-bright); resize: vertical; min-height: 3rem; margin-bottom: 0.4rem; }
+.rx-edit:focus { outline: none; border-color: var(--accent); }
+.link-list { list-style: none; }
+.link-list li { padding: 0.42rem 0; border-bottom: 1px solid var(--border); }
+.link-list li:last-child { border-bottom: none; }
+.link-list a { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.75rem; display: block; }
+.link-list a:hover { text-decoration: underline; }
+.link-list .ld { font-size: 0.62rem; color: var(--text-dim); margin-top: 2px; }
+.notes-ta { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.55rem 0.65rem; font-family: inherit; font-size: 0.75rem; color: var(--text); resize: vertical; min-height: 9rem; line-height: 1.6; }
+.notes-ta:focus { outline: none; border-color: var(--accent); }
+.save-ok { font-size: 0.62rem; color: var(--done); margin-top: 4px; opacity: 0; transition: opacity 0.3s; }
+.save-ok.show { opacity: 1; }
+#mOverlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 1.2rem; }
+#mBox { background: var(--bg-panel); border: 1px solid var(--border-bright); border-radius: 10px; max-width: 32rem; width: 100%; max-height: 85vh; overflow-y: auto; padding: 1.2rem 1.4rem; }
+::-webkit-scrollbar { width: 7px; } ::-webkit-scrollbar-track { background: var(--bg); } ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 4px; }
+.alert-item { border-left: 3px solid var(--boss); background: rgba(240,80,80,0.07); border-radius: 5px; padding: 0.65rem 0.85rem; margin-bottom: 0.75rem; }
+.alert-item:last-of-type { margin-bottom: 1rem; }
+.alert-title { color: var(--boss); font-weight: 800; font-size: 0.9rem; margin-bottom: 0.3rem; }
+.alert-body { color: var(--text); font-size: 0.78rem; line-height: 1.55; }
+.alert-hd { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 800; margin-bottom: 0.85rem; }
+.alert-ok { display: block; width: 100%; padding: 0.55rem; background: var(--boss); border: none; color: #fff; font-family: inherit; font-size: 0.82rem; font-weight: 800; cursor: pointer; border-radius: 5px; letter-spacing: 0.04em; }
+.alert-ok:hover { background: #ff7070; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div><h1 id="bName"></h1><div class="sub" id="bSub"></div></div>
+  <div class="topbar-right">
+    <div class="size-toggle">
+      <button type="button" class="sz-btn" onclick="setSize(15)">S</button>
+      <button type="button" class="sz-btn" onclick="setSize(18)">M</button>
+      <button type="button" class="sz-btn" onclick="setSize(22)">L</button>
+      <button type="button" class="sz-btn" onclick="setSize(27)">XL</button>
+    </div>
+    <select id="bSelect" class="build-select" title="Select build" onchange="switchBuild(this.value)"></select>
+    <a id="bLink" href="#" target="_blank">Guide →</a>
+  </div>
+</div>
+<div class="tabs" id="tabBar"></div>
+<div id="pages"></div>
+<div id="mOverlay" onclick="closeMifBg(event)"><div id="mBox"></div></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// ICON REGISTRY
+// ═══════════════════════════════════════════════════════
+const CDN = 'https://cdn.mobalytics.gg/cdn-cgi/image/format=auto';
+const SI = n => `${CDN},width=40,height=40/assets/poe-2/images/game/Art/2DArt/SkillIcons/${n}.webp`;
+const SU = n => `${CDN},width=28/assets/poe-2/images/game/Art/2DItems/Gems/New/NewSupport/${n}.webp`;
+
+const SKILL_ICONS = {
+  'Falling Thunder':   SI('MonkLightningStrike'),
+  'Killing Palm':      SI('MonkKillingPalm'),
+  'Frozen Locust':     SI('MonkIceAmbush'),
+  'Frost Bomb':        SI('SorceressFrostBomb'),
+  'Wind Blast':        SI('MonkGaleStrikeSwing'),
+  'Wing Blast':        SI('DruidWingBlast'),
+  'Pounce':            SI('DruidWolfLeapAttack'),
+  'Herald of Thunder': SI('HeraldOfThunderSkill'),
+  'Devour':            SI('DruidDevourShock'),
+  'Storm Wave':        SI('MonkStormWave'),
+  'Siphoning Strike':  SI('MonkSiphoningStrike'),
+  'Hand of Chayula':   SI('MonkHandOfChayula'),
+  'Wind Dancer':       SI('RangerWindDancerSkill'),
+  'Whirling Assault':  SI('MonkWhirlingAssault'),
+  'Tempest Bell':      SI('MonkTempestBell'),
+  'Staggering Palm':   SI('MonkWindPalm'),
+  'Charged Staff':     SI('MonkChargedStaff'),
+};
+
+const SUPPORT_ICONS = {
+  'Rage I':               SU('RageSupportGem'),
+  'Rage II':              SU('RageSupportGem'),
+  'Brink I':              SU('BrinkSupportGem'),
+  'Thrill of the Kill':   SU('ThrilloftheKillSupportGem'),
+  'Thrill of the Kill II':SU('ThrilloftheKillSupportGem'),
+  'Impact Shockwave':     SU('ImpactShockwaveSupportGem'),
+  'Rapid Attacks I':      SU('FasterAttackSupportGem'),
+  'Elemental Armament I': SU('WeaponElementalDamageSupportGem'),
+  'Elemental Armament II':SU('WeaponElementalDamageSupportGem'),
+  'Elemental Armament':   SU('WeaponElementalDamageSupportGem'),
+  'Fist of War I':        SU('FistofWarSupportGem'),
+  'Fist of War II':       SU('FistofWarSupportGem'),
+  'Perpetual Charge':     SU('PerpetualChargeSupportGem'),
+  'Gorge':                SU('MortuarySupportGem'),
+  'Charge Profusion I':   SU('MultipleChargesSupportGem'),
+  'Shock':                SU('ConductionSupportGem'),
+  'Lightning Exposure':   SU('LightningExposureSupportGem'),
+  'Cooldown Recovery I':  SU('CooldownReductionSupportGem'),
+  'Maim':                 SU('MaimSupportGem'),
+  'Clarity I':            SU('ClaritySupportGem'),
+  'Cannibalism I':        SU('CannibalismSupportGem'),
+  'Blazing Critical':     SU('BlazingCritsSupportGem'),
+  'Prolonged Duration II':SU('MoreDurationSupportGem'),
+  'Innervate':            SU('InnervateSupportGem'),
+  'Elemental Weakness':   SU('CurseEffectSupportGem'),
+  'Elemental Focus':      SU('ElementalFocusSupportGem'),
+  'Heavy Swing':          SU('MeleePhysicalDamageSupportGem'),
+  'Magnified Area II':    SU('IncreasedAreaOfEffectSupportGem'),
+  'Retreat II':           SU('RetreatingAssaultSupportGem'),
+  'Multishot II':         SU('MultipleProjectilesSupportGem'),
+};
+
+// ═══════════════════════════════════════════════════════
+// BUILD DATA
+// ═══════════════════════════════════════════════════════
+const BUILDS = [
+  {
+    id: 'pcm-05',
+    name: 'Power Charge Martial Artist',
+    version: '0.5 — Runes of Aldur · p4wnyhof',
+    guideUrl: 'https://mobalytics.gg/poe-2/profile/p4wnyhof/builds/power-charge-martial-artist',
+    vendorRegex: 'i.+mov|^ad.*ph.*da|\\d [cfl].+da|^\\+.*ills$',
+    buildJson: '{"ascendancy":"Monk2","items":[{"additional_text":"Nettle Talisman","inventory_id":"Weapon2","level_interval":[5,100],"slot_x":0,"slot_y":0},{"additional_text":"Soldier Greathelm","inventory_id":"Helm","level_interval":[12,100],"slot_x":0,"slot_y":0},{"additional_text":"Rusted Cuirass","inventory_id":"BodyArmour","level_interval":[1,100],"slot_x":0,"slot_y":0},{"additional_text":"Riveted Mitts","inventory_id":"Gloves","level_interval":[11,100],"slot_x":0,"slot_y":0},{"additional_text":"Rough Greaves","inventory_id":"Boots","level_interval":[1,100],"slot_x":0,"slot_y":0},{"additional_text":"Amber Amulet","inventory_id":"Amulet","level_interval":[8,100],"slot_x":0,"slot_y":0},{"additional_text":"Iron Ring","inventory_id":"Ring","level_interval":[1,100],"slot_x":0,"slot_y":0},{"additional_text":"Iron Ring","inventory_id":"Ring2","level_interval":[1,100],"slot_x":0,"slot_y":0},{"additional_text":"Greater Life Flask","inventory_id":"Flask1","level_interval":[10,100],"slot_x":0,"slot_y":0},{"additional_text":"Greater Mana Flask","inventory_id":"Flask2","level_interval":[10,100],"slot_x":0,"slot_y":0}],"name":"[0.5] Power Charge Martial Artist","passives":[{"id":"attack_speed25"},{"id":"attack_speed27"},{"id":"shadow_monk_notable1"},{"id":"attack_damage1"},{"id":"attack_damage3"},{"id":"intelligence10"},{"id":"dexterity6"},{"id":"attributes28"},{"id":"intelligence7"},{"id":"jewel_slot1961"},{"id":"dexterity44"},{"id":"dexterity43"},{"id":"passive_keystone_hollow_palm_technique"},{"id":"attack_speed46"},{"id":"attack_speed37"},{"id":"attack_speed47"}],"skills":[]}',
+    quickLinks: [
+      { label: 'My Characters / Inventory →', url: 'https://pathofexile2.com/my-account/characters', desc: 'Web view of all characters, gear, stash.' },
+      { label: 'p4wnyhof Build Page →', url: 'https://mobalytics.gg/poe-2/profile/p4wnyhof/builds/power-charge-martial-artist', desc: 'Full written guide + passive tree. Source of truth — open on right monitor.' },
+      { label: "★ Loot Filter →", url: 'https://www.filterblade.xyz/?profile=RealP4wnyhof%237009&saveState=J4ZJOG9W2LJN43&isPreset=false&game=Poe2', desc: 'Download → Documents\\My Games\\Path of Exile 2 → select in-game.' },
+      { label: 'PoE 2 Trade →', url: 'https://www.pathofexile.com/trade2', desc: 'Paste vendor regex here.' },
+      { label: 'PoE 2 Wiki →', url: 'https://www.poe2wiki.net/wiki/Path_of_Exile_2_Wiki', desc: 'Skills, supports, mechanics.' },
+      { label: 'MaxRoll Campaign Guide →', url: 'https://maxroll.gg/poe2/getting-started/path-of-exile-2-campaign-guide', desc: 'Walkthrough + stat bonuses.' },
+      { label: 'MaxRoll Passive Tree →', url: 'https://maxroll.gg/poe2/passive-tree/', desc: 'Browser passive tree planner — map out your build.' },
+      { label: 'MaxRoll League Mechanic Rewards →', url: 'https://maxroll.gg/poe2/resources/campaign-league-mechanic-rewards-cheat-sheet', desc: 'Which zones drop Exalted Orbs, high-level gems, Vaal Orbs per act.' },
+      { label: 'PoE2DB →', url: 'https://poe2db.tw/', desc: 'Full game database — every item, modifier, skill, passive extracted from client.' },
+      { label: 'Path of Building →', url: 'https://github.com/PathOfBuildingCommunity/PathOfBuilding-PoE2', desc: 'Character planner with hard DPS numbers. Best tool for build theory.' },
+      { label: 'Exiled Exchange 2 →', url: 'https://github.com/Kvan7/Exiled-Exchange-2', desc: 'In-game price check overlay (Awakened PoE Trade successor).' },
+      { label: 'Craft of Exile →', url: 'https://www.craftofexile.com/?game=poe2', desc: 'Crafting simulator — plan currency investment before spending.' },
+      { label: 'GGG Skill Tree Export →', url: 'https://github.com/grindinggear/poe2-skilltree-export', desc: 'Official passive tree data from GGG. Used by PoB and planners.' }
+    ],
+    acts: [
+      {
+        id: 'act1', label: 'Act 1', sub: 'LVL 1–14',
+        heading: 'Act 1 — The Bones of It',
+        loop: { steps: ['Wind Blast', 'Wing Blast', 'Devour', 'Falling Thunder'], note: 'Pack: Wind Blast dazes → Wing Blast detonates. Boss: fill stagger bar (~70% orange) → Wing Blast = 3 charges → Falling Thunder.' },
+        passives: ['Skill Speed', 'Attack Damage', 'Atk + Skill Speed', 'Shock Chance', 'Lightning Damage', 'STR node (talisman req)', 'DEX/INT attrs', 'All attack nodes → Hollow Palm'],
+        gems: [
+          { name: 'Falling Thunder', paired: 'Quarter Staff Strike', tags: [], source: 'Starter — kill Bloated Miller at shore', note: 'Main nuke. Consumes power charges for massive damage.' },
+          { name: 'Killing Palm', tags: [], source: 'Second starter skill', note: 'Cull monsters for power charges → feeds Falling Thunder. Replaced by Devour at Tier 5.' },
+          { name: 'Frozen Locust', tags: [], source: 'Free lvl 1 — tiny camp inside Clearfell', note: 'Drop near packs, hit it, mobs explode frozen. Drop when Wing Blast online.' },
+          { name: 'Frost Bomb', tags: [], source: 'Grellwood witch (lucky drop)', note: 'Elemental exposure on bosses. Keep unsupported.' },
+          { name: 'Wind Blast', tags: ['Tier 3', 'LVL 7'], source: 'After Rusted King — 1st Tier 3 gem', note: 'Dazes enemies — primes for stun. Main clear. Move Rage I here.' },
+          { name: 'Wing Blast', tags: ['Wyvern', 'Tier 3', 'LVL 7'], source: '2nd Tier 3 gem — needs talisman in weapon set 2', note: 'Need STR node to equip talisman. Detonates dazed packs. Boss stagger ~70% → Wing Blast = instant 3 power charges.' },
+          { name: 'Pounce', tags: ['Wyvern', 'LVL 7'], source: '3rd Tier 3 gem', note: 'Movement skill.' },
+          { name: 'Herald of Thunder', type: 'sp', tags: ['Spirit'], source: 'Freythorn — King in the Mists (+30 Spirit)', note: 'Everything from here is shock-focused. No supports yet.' },
+          { name: 'Devour', tags: ['Wyvern', 'Tier 5', 'LVL 15'], source: 'After Executioner — 1st Tier 5 gem', note: 'Replaces Killing Palm. Jumps + eats corpses/culls for power charges. Heals. Enables Thrill of the Kill. ⚠ Do NOT upgrade past Rank 5 — save orbs for Act 4 swap.' },
+          { name: 'Wing Blast', tags: ['Wyvern', 'Tier 3'], source: 'Already in kit', note: '⚠ Do NOT upgrade past Rank 3 — save orbs for Act 4 Whirling Assault swap.' },
+          { name: 'Pounce', tags: ['Wyvern', 'Tier 3'], source: 'Already in kit', note: '⚠ Do NOT upgrade past Rank 3 — save orbs for Act 4 swap.' },
+        ],
+        supports: [
+          { name: 'Falling Thunder', pri: 'core', items: ['Rage I (first — move to Wind Blast later)', 'Elemental Armament I', 'Fist of War I'] },
+          { name: 'Wind Blast', pri: 'core', items: ['Rage I ← move here from Falling Thunder', 'Brink I'] },
+          { name: 'Wing Blast', pri: 'sec', items: ['Rapid Attacks I', 'Impact Shockwave'] },
+          { name: 'Devour', pri: 'sec', items: ['Thrill of the Kill'] },
+          { name: 'Herald of Thunder', pri: 'util', type: 'sp', items: ['No supports yet — Act 3'] },
+        ],
+        events: [
+          { reward: '+10% Cold Res', who: 'Beira of the Rotten Pack', loc: 'Clearfell' },
+          { reward: '+30 Spirit', who: 'King in the Mists', loc: 'Freythorn — enables Herald of Thunder' },
+          { reward: '+20 Max Life', who: 'Candlemass, the Living Rite', loc: 'Ogham Manor' },
+          { reward: '2× Passive Points', who: 'The Crowbell', loc: 'Hunting Grounds' },
+          { reward: '2× Passive Points', who: "Una's Hut", loc: 'Ogham Farmlands' },
+        ],
+        choices: [],
+        boss: { name: 'Count Geonor', steps: ['Build power charges on adds first', 'Wind Blast → fill stagger bar (~70% orange)', 'Wing Blast → instant 3 power charges', 'Falling Thunder — nuke', 'Wolf form: repeat same routine'] }
+      },
+      {
+        id: 'act2', label: 'Act 2', sub: 'LVL 14–28',
+        heading: 'Act 2 — The Real Build Begins',
+        loop: { steps: ['Storm Wave', 'Siphoning Strike', '↻ ×3', 'Falling Thunder'], note: 'Storm Wave shocks → Siphoning steals shock = power charge + lightning blast. 3 charges → Falling Thunder. Wing Blast still good on bosses.' },
+        passives: ['Rush Hollow Palm Technique', 'Reduced Mana Cost', 'Ailment Chance', 'Elemental Damage', 'Shock on Consume → Reapply (before Jamanra)'],
+        gems: [
+          { name: 'Storm Wave', tags: ['Tier 7'], source: '~Level 22 — replaces Wind Blast as main clear', note: 'High shock rate. Always feeds Siphoning Strike.' },
+          { name: 'Siphoning Strike', tags: ['Tier 7'], source: '~Level 22 — pair with Storm Wave', note: 'Steals shock → power charge + lightning shockwave. This IS the core loop.' },
+          { name: 'Hollow Palm Technique', type: 'pas', tags: ['Keystone'], source: 'Passive tree — rush it (reachable lvl 13)', note: 'No weapon + HP = massive DPS. Wing Blast still works via talisman.' },
+          { name: 'Way of the Mountain', type: 'asc', tags: ['Ascendancy 1'], source: 'Trial of Sekhemas — Act 2, do ASAP', note: 'Immobilise enemies → Mountain\'s Teachings stacks (max 30). While active: 15% more attack dmg, hits ≤10% max life deal 40% less dmg, +50% Stun Threshold. You lose stacks when hit — keep immobilising.' },
+        ],
+        supports: [
+          { name: 'Storm Wave', pri: 'core', items: ['Rage I', 'Shock'] },
+          { name: 'Siphoning Strike', pri: 'core', items: ['Rapid Attacks I', 'Charge Profusion I'] },
+          { name: 'Falling Thunder', pri: 'sec', items: ['Elemental Armament I', 'Fist of War I'] },
+          { name: 'Devour', pri: 'sec', items: ['Thrill of the Kill'] },
+          { name: 'Herald of Thunder', pri: 'util', type: 'sp', items: ['No supports yet — Act 3'] },
+        ],
+        events: [
+          { reward: '+10% Lightning Res', who: 'Sisters of Garukhan', loc: 'Spires of Deshar' },
+          { reward: '2× Passive Points', who: 'Medallion', loc: 'Valley of the Titans' },
+          { reward: '2× Passive Points', who: 'Kabala, Constrictor Queen', loc: 'Keth' },
+          { reward: '2× Passive Points', who: 'Final Letter', loc: 'Deshar' },
+        ],
+        choices: [
+          { pick: '+1 Charm Slot + 30% Charm Charges Gained', skip: '30% Charm Effect Duration', loc: 'Valley of Titans — Medallion (pick LEFT)' },
+        ],
+        boss: { name: 'Jamanra', steps: ['Get "reapply shock on consume" passive first', 'Storm Wave → extract shock → bop', 'Shock stays on him via passive — repeat', 'Easiest Jamanra ever'] }
+      },
+      {
+        id: 'act3', label: 'Act 3', sub: 'LVL 28–40',
+        heading: 'Act 3 — Smooth Sailing',
+        loop: { steps: ['Storm Wave', 'Siphoning Strike', '↻ ×3', 'Falling Thunder'], note: 'Same loop. Jeweled skills hit way harder. Perpetual Charge = Falling Thunder fires multiple times in a row.' },
+        passives: ['Remove Mana Cost/Regen nodes (Clarity covers)', 'Lightning Damage', 'Lightning Penetration', 'Killer Instinct', 'Magnitude of Shock', 'Mana Regeneration'],
+        gems: [
+          { name: "Jeweler's Orb → Falling Thunder", type: 'pas', tags: ['Action'], source: '1st Jeweler orb', note: 'Add Perpetual Charge — chance not to consume charges on hit.' },
+          { name: "Jeweler's Orb → Storm Wave", type: 'pas', tags: ['Action'], source: '2nd Jeweler orb', note: 'Add Lightning Exposure.' },
+          { name: '+30 Spirit — Azak Bog Witch', type: 'pas', tags: ['Action'], source: 'Azak Bog — Ignagduk', note: 'Spend on Clarity + Cannibalism on Herald. Enables Wind Dancer + Hand of Chayula.' },
+          { name: 'Clarity I', type: 'sp', tags: ['Aura'], source: 'Add to Herald of Thunder', note: 'Solves all mana. Remove reduced mana cost passives after.' },
+          { name: 'Cannibalism I', type: 'sp', tags: ['Spirit'], source: 'Add to Herald of Thunder', note: 'Life on kill.' },
+          { name: 'Hand of Chayula', type: 'sp', tags: ['Spirit', 'NEW 0.5'], source: 'New spirit curse skill', note: 'Applies Elemental Weakness curse. Big boost vs bosses.' },
+          { name: 'Wind Dancer', type: 'sp', tags: ['Spirit'], source: 'New spirit skill', note: 'Defensive spirit. Add Maim support.' },
+          { name: 'Hollow Focus Technique', type: 'asc', tags: ['Ascendancy 2'], source: 'Trial of Chaos — do at Level 40+', note: 'Grants Hollow Focus — ethereal bells spawn near you every 7s. Cull bells with Killing Palm → instant Power Charges. Bells always Primed for Stun, always Crit. Core power charge engine.' },
+        ],
+        supports: [
+          { name: 'Falling Thunder', pri: 'core', items: ['Elemental Armament II', 'Fist of War I', 'Perpetual Charge'] },
+          { name: 'Storm Wave', pri: 'core', items: ['Rage I', 'Shock', 'Lightning Exposure'] },
+          { name: 'Siphoning Strike', pri: 'sec', items: ['Rapid Attacks I', 'Charge Profusion I'] },
+          { name: 'Hand of Chayula', pri: 'sec', type: 'sp', items: ['Elemental Weakness', 'Heightened Curse'] },
+          { name: 'Herald of Thunder', pri: 'sec', type: 'sp', items: ['Clarity I', 'Cannibalism I'] },
+          { name: 'Devour', pri: 'sec', items: ['Gorge', 'Thrill of the Kill'] },
+          { name: 'Wind Dancer', pri: 'util', type: 'sp', items: ['Maim'] },
+          { name: 'Pounce', pri: 'util', items: ['Cooldown Recovery I'] },
+          { name: 'Wing Blast', pri: 'util', items: ['Impact Shockwave'] },
+        ],
+        events: [
+          { reward: '+10% Fire Res', who: 'Blackjaw, the Remnant', loc: 'Machinarium' },
+          { reward: '+30 Spirit', who: 'Ignagduk, the Bog Witch', loc: 'Azak Bog — enables Wind Dancer + Hand of Chayula' },
+          { reward: '2× Passive Points', who: 'Mighty Silverfist', loc: 'Jungle Ruins' },
+          { reward: '2× Passive Points', who: 'Blood Sacrifice', loc: 'Aggorat' },
+        ],
+        choices: [
+          { pick: '25% increased Stun Threshold', perm: true, loc: 'Venom Crypts — Venom Draught' },
+        ],
+        boss: { name: 'Doryani', steps: ['Storm Wave → Siphoning ×2 = 5 charges', 'One more Storm Wave (keep shock for multiplier)', 'Falling Thunder — he folds'] }
+      },
+      {
+        id: 'act4', label: 'Act 4+', sub: 'LVL 41+',
+        heading: 'Act 4 — Whirling Swap',
+        alerts: [
+          { title: '⚠ GEAR SWAP — Do this immediately', body: 'Switch ALL gear from full Armor → Evasion + Energy Shield. Weapon Set 2: equip Voltfang Talisman (Req Lvl 46 · 53 STR · 38 INT · 21% Shock Magnitude). Body armour: Corsair Vest. Trade league: buy these on trade site if you don\'t have them. If you skip this your defences are completely wrong for the rest of the act.' },
+          { title: '⚠ Spirit: Drop Clarity + Cannibalism', body: 'Remove Clarity I and Cannibalism I from Herald of Thunder. Replace both with Ghost Dance + Maim. Ghost Dance gives evasion-based regen — only works properly once you have Evasion/ES gear.' },
+        ],
+        loop: { steps: ['Whirling Assault', 'Staggering Palm (30s)', 'Killing Palm', 'Charged Staff'], note: 'WA clears everything. Stack Staggering Palm buff to 30s against enemies. Killing Palm culls for power charges → Charged Staff. Tempest Bell for bosses.' },
+        passives: ['Evasion Rating', 'Energy Shield', 'Tankiness Nodes', 'Lightning Damage', 'Shock Magnitude'],
+        gems: [
+          { name: 'Way of the Stonefist', type: 'asc', tags: ['Ascendancy 3'], source: 'Trial of the Sekhemas — early maps', note: 'Transforms your gloves into Fists of Stone (+3 Evasion/lvl, +1 ES/lvl). Explicit mods on gloves become more powerful versions.' },
+          { name: 'Whirling Assault', tags: ['NEW SKILL'], source: 'Buy/find — swap in Act 4, needs good Quarterstaff', note: 'Replaces Storm Wave loop entirely. Ghost copies = boss melt. Main clear. Need 400+ PDPS Quarterstaff before swapping.' },
+          { name: 'Tempest Bell', tags: [], source: 'New skill — boss killer', note: 'Drop bell, hit it. Heavy Swing + Magnified Area for huge AoE burst.' },
+          { name: 'Staggering Palm', tags: [], source: 'New skill — buff stacker', note: 'Hit enemies/belts → buff throws projectiles. Stack to 30s. Pairs with Whirling Assault.' },
+          { name: 'Killing Palm', tags: [], source: 'Back for power charge gen', note: 'Cull enemies for power charges → Charged Staff. Blazing Critical + Charge Profusion + Thrill of the Kill.' },
+          { name: 'Charged Staff', tags: [], source: 'New skill — power charge nuke', note: '1 power charge → tap → lightning-infused attacks. + Prolonged Duration II + Innervate.' },
+          { name: 'Ghost Dance', type: 'sp', tags: ['Spirit'], source: 'Replaces Clarity + Cannibalism', note: 'Evasion-based regen. Pairs with evasion/ES gear.' },
+        ],
+        supports: [
+          { name: 'Whirling Assault', pri: 'core', items: ['Rage II', 'Heavy Swing', 'Magnified Area II'] },
+          { name: 'Killing Palm', pri: 'core', items: ['Thrill of the Kill II', 'Charge Profusion I', 'Blazing Critical'] },
+          { name: 'Charged Staff', pri: 'sec', items: ['Prolonged Duration II', 'Innervate'] },
+          { name: 'Tempest Bell', pri: 'sec', items: ['Heavy Swing', 'Magnified Area II'] },
+          { name: 'Staggering Palm', pri: 'sec', items: ['Retreat II', 'Multishot II'] },
+          { name: 'Herald of Thunder', pri: 'sec', type: 'sp', items: ['Elemental Focus', 'Elemental Armament II'] },
+          { name: 'Ghost Dance', pri: 'util', type: 'sp', items: ['Maim'] },
+        ],
+        events: [
+          { reward: '+5% Max Mana', who: "Navali's Rest", loc: 'Eye of Hinekora' },
+          { reward: '2× Passive Points + Skill Gem (lvl 13)', who: 'Captain Hartlin', loc: "Journey's End" },
+          { reward: '2× Passive Points', who: 'Yama The White', loc: 'Halls of the Dead' },
+          { reward: '+5 Resistances (SSF) / +5 Stats (Trade)', who: 'Totems', loc: 'Halls of the Dead' },
+        ],
+        choices: [
+          { pick: '+5 Dexterity', perm: true, loc: "Tawhoa's Test (vs +5% Lightning Res)" },
+          { pick: '+5 Intelligence', perm: true, loc: "Tasalio's Test (vs +5% Cold Res)" },
+          { pick: '+5 Strength', perm: true, loc: "Ngamahu's Test (vs +5% Fire Res)" },
+          { pick: '+30% Life Recovery from Flasks', skip: '+30% Mana Recovery', loc: 'Abandoned Prison — Goddess of Justice' },
+        ],
+        boss: null
+      }
+    ],
+    interlude: {
+      heading: 'Interludes — Key Stops',
+      sub: 'BETWEEN ACTS',
+      events: [
+        { reward: '+5% Max Life', who: 'Molten Shrine', loc: 'Khari Crossing' },
+        { reward: '+40 Spirit', who: 'Lythara, the Wayward Spear', loc: 'Kriar Village' },
+        { reward: '2× Passive Points', who: 'Oswin, the Dread Warden', loc: 'Wolvenhold' },
+        { reward: '2× Passive Points', who: 'Akthi and Anundr', loc: 'Khari Crossing' },
+        { reward: '2× Passive Points', who: 'The Abominable Yeti', loc: 'Howling Caves' },
+        { reward: 'Free Unique Item (pick 1)', who: 'Elder Madox', loc: 'Kriar Peaks' },
+        { reward: '2× Passive Points', who: 'The Hooded One', loc: 'Kingsmarch — after Siege of Oriath' },
+      ],
+      choices: [
+        { pick: '15% Global Defences ★', alts: ['+5 All Attributes', '+5 All Elemental Res', '12% Cooldown Recovery', '3% Move Speed', '20% Presence AoE', '5% XP (inverted drawbacks)'], loc: "Qimah — Tabana's Pillar · 7 choices, swappable anytime" },
+      ]
+    },
+    endgame: {
+      heading: 'Endgame — Hollow Focus Tech',
+      sub: '~LEVEL 50+',
+      summary: 'Hollow Focus bells spawn every 7s — always primed for stun, always crit, can be culled. Infinite power charge engine.',
+      cards: [
+        { title: 'Killing Palm + bells', type: '', items: ['Cull bell → instant power charge', '+ Blazing Critical — 15% fire dmg on crit', '+ Charge Profusion I — multi-charge', '+ Thrill of the Kill (if bell shocked)', '+ Innervate (if Thrill works)'] },
+        { title: 'Devour + bells', type: '', items: ['Eat bell → power charges', '+ Blazing Critical', '+ Charge Profusion I', '+ Thrill of the Kill (same conditions)'] },
+        { title: 'Staggering Palm + bells', type: '', items: ['Hit bell → always primed → instant buff', 'Stack buff to 30s', 'Pairs with Whirling Assault'] },
+        { title: 'Charged Staff (1 charge)', type: '', items: ['Tap → 13s lightning-infused attacks', '50% more lightning dmg ALL skills', '+ Prolonged Duration II', 'Use after culling bell or Wing Blast'] },
+        { title: 'Life Drain (optional)', type: 'sp', items: ['On Killing Palm / Devour', '12% max life over 4s on cull', 'Bell = free constant healing'] },
+        { title: 'Soul Drain (optional)', type: 'sp', items: ['Same skills as Life Drain', '12% max mana over 4s on cull', 'Bell = free constant mana'] }
+      ]
+    }
+  }
+];
+
+// ═══════════════════════════════════════════════════════
+// FONT SIZE
+// ═══════════════════════════════════════════════════════
+const SIZES = [15, 18, 22, 27];
+function setSize(px) {
+  document.documentElement.style.fontSize = px + 'px';
+  localStorage.setItem('poe2_fs', px);
+  document.querySelectorAll('.sz-btn').forEach((b,i) => b.classList.toggle('active', SIZES[i] === px));
+}
+(function(){ const s = parseInt(localStorage.getItem('poe2_fs')||'18'); setSize(SIZES.includes(s)?s:18); })();
+
+// ═══════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════
+let current = null;
+
+function renderBuild(b) {
+  current = b;
+  document.getElementById('bName').textContent = b.name;
+  document.getElementById('bSub').textContent = b.version;
+  document.getElementById('bLink').href = b.guideUrl;
+
+  const tabBar = document.getElementById('tabBar');
+  tabBar.innerHTML = '';
+  const allTabs = [
+    ...b.acts.map(a => ({id:a.id,label:a.label,sub:a.sub})),
+    {id:'interlude',label:'Interlude',sub:'Events'},
+    {id:'ascendancy',label:'Ascendancy',sub:'All Nodes'},
+    {id:'endgame',label:'Endgame',sub:'Hollow Focus'},
+    {id:'tools',label:'Tools',sub:'Links · Regex'}
+  ];
+  allTabs.forEach(t => {
+    const d = document.createElement('div');
+    d.className = 'tab'; d.dataset.tab = t.id;
+    d.innerHTML = `${t.label}<span class="tsub">${t.sub}</span>`;
+    d.onclick = () => switchTab(t.id);
+    tabBar.appendChild(d);
+  });
+
+  const pc = document.getElementById('pages');
+  pc.innerHTML = '';
+  b.acts.forEach(a => pc.appendChild(buildActPage(a)));
+  if (b.interlude) pc.appendChild(buildInterludePage(b.interlude));
+  pc.appendChild(buildAscendancyPage());
+  pc.appendChild(buildEndgamePage(b.endgame));
+  pc.appendChild(buildToolsPage(b));
+
+  const saved = localStorage.getItem(`poe2_tab_${b.id}`);
+  switchTab(saved && allTabs.find(t=>t.id===saved) ? saved : b.acts[0].id);
+}
+
+function buildActPage(a) {
+  const p = document.createElement('div');
+  p.className = 'page'; p.id = a.id;
+  const bid = current ? current.id : 'b';
+
+  const loopHtml = a.loop.steps.map((s,i) =>
+    (i>0?'<span class="cb-arrow">→</span>':'')+`<span class="cb-step">${esc(s)}</span>`
+  ).join('');
+  const passHtml = a.passives.map((s,i) =>
+    (i>0?'<span class="pb-arrow">→</span>':'')+`<span class="pb-step">${esc(s)}</span>`
+  ).join('');
+
+  // GEMS — compact rows, click opens modal
+  let gemIdx = 0;
+  const gemsHtml = a.gems.map(g => {
+    const t = g.type || '';
+    const rowClass = t==='sp'?'sp':t==='pas'?'pas':t==='asc'?'asc':'';
+    const tags = (g.tags||[]).map(x => {
+      const c = x==='Wyvern'?'tag-w':(x==='Spirit'||x==='Aura'||x==='NEW 0.5'?'tag-s':(x.startsWith('Asc')||x==='Decision')?'tag-a':x==='CRITICAL'?'tag-crit':'');
+      return `<span class="tag ${c}">${esc(x)}</span>`;
+    }).join('');
+    const paired = g.paired?` <span class="gpair">+ ${esc(g.paired)}</span>`:'';
+    const iconUrl = SKILL_ICONS[g.name] || SKILL_ICONS[g.name.split(' →')[0].trim()];
+    const iconHtml = iconUrl
+      ? `<img class="gem-ico" src="${iconUrl}" alt="${g.name}" onerror="this.style.display='none'">`
+      : `<div class="gem-ico-ph"></div>`;
+    const isAction = (t === 'pas' || t === 'asc');
+    const numHtml = !isAction ? `<span class="gem-num">${++gemIdx}</span>` : '';
+    const src = g.source ? `<span class="gwhere">· ${esc(g.source)}</span>` : '';
+    const hasDetail = !!(g.note);
+    const click = hasDetail ? `onclick="openGemModal(${JSON.stringify(esc(g.name))},${JSON.stringify(esc(g.source||''))},${JSON.stringify(esc(g.note||''))})"` : '';
+    return `<div class="gem ${rowClass}" ${click}>${numHtml}${iconHtml}<div class="gem-txt"><span class="gname ${t==='sp'?'sp':''}">${esc(g.name)}</span>${paired}${tags}${src}</div></div>`;
+  }).join('');
+
+  // SUPPORTS — with priority badges
+  const supportsHtml = a.supports.map(s => {
+    const ico = SKILL_ICONS[s.name] || SKILL_ICONS[s.name.split(' ')[0]];
+    const icoHtml = ico ? `<img class="sc-ico" src="${ico}" alt="${s.name}" onerror="this.style.display='none'">` : '';
+    const items = s.items.map(item => {
+      const spIco = SUPPORT_ICONS[item];
+      const spHtml = spIco ? `<img class="sp-ico" src="${spIco}" alt="${item}" onerror="this.style.display='none'">` : `<span class="sp-dot">+</span>`;
+      return `<li>${spHtml}<span>${esc(item)}</span></li>`;
+    }).join('');
+    const priLabel = s.pri==='core'?'Core':s.pri==='sec'?'Sec':s.pri==='util'?'Util':'';
+    const priBadge = priLabel ? `<span class="pri-badge ${s.pri}">${priLabel}</span>` : '';
+    const priClass = s.pri ? `pri-${s.pri}` : '';
+    return `<div class="sc ${s.type==='sp'?'sp':''} ${priClass}"><div class="sc-hd">${icoHtml}<span class="sc-title">${esc(s.name)}${priBadge}</span></div><ul class="sc-list">${items}</ul></div>`;
+  }).join('');
+
+  // BOSS
+  const bossHtml = a.boss ? `<div class="boss-card"><div class="boss-name">⚔ ${esc(a.boss.name)}</div><ul class="boss-steps">${a.boss.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></div>` : '';
+
+  // EVENTS — checkboxes
+  const eventsHtml = a.events && a.events.length ? `
+    <div class="events-card">
+      <div class="events-title">★ Don't Miss — tick when grabbed</div>
+      ${a.events.map((e,i)=>{
+        const key=`ev_${bid}_${a.id}_${i}`;
+        const done=localStorage.getItem(key)?'done':'';
+        const chk=localStorage.getItem(key)?'checked':'';
+        return `<div class="ev-item ${done}" id="evi_${key}"><input type="checkbox" class="ev-check" ${chk} onchange="toggleEv('${key}',this)"><div><span class="ev-reward">${esc(e.reward)}</span><span class="ev-loc">${esc(e.who)} · ${esc(e.loc)}</span></div></div>`;
+      }).join('')}
+    </div>` : '';
+
+  // CHOICES — permanent in red
+  const choicesHtml = a.choices && a.choices.length ? `
+    <div class="choices-card"><div class="choices-title">⚑ Choices</div>
+      ${a.choices.map(c=>{
+        const permClass=c.perm?'perm':'';
+        const permWarn=c.perm?'<span class="perm-warn">⚠ PERMANENT</span>':'';
+        return `<div class="ch-item ${permClass}">${permWarn}<span class="ch-pick">✓ ${esc(c.pick)}</span>${c.alts?`<div class="ch-alts">${c.alts.map(x=>`<span>${esc(x)}</span>`).join('')}</div>`:''}<span class="ch-loc">${esc(c.loc||'')}</span></div>`;
+      }).join('')}
+    </div>` : '';
+
+  p.innerHTML = `
+    <div class="act-head"><h2>${esc(a.heading)}</h2><span class="lvl">${esc(a.sub.toUpperCase())}</span></div>
+    <div class="combat-bar"><span class="cb-label">Loop</span>${loopHtml}<span class="cb-note">${esc(a.loop.note)}</span></div>
+    <div class="passive-bar"><span class="pb-label">Passives</span>${passHtml}</div>
+    <div class="act-grid">
+      <div class="panel"><div class="panel-hd">Skill Gems — tap for detail</div>${gemsHtml}</div>
+      <div class="panel"><div class="panel-hd">Support Links</div>${supportsHtml}</div>
+      <div class="right-stack">${bossHtml}${eventsHtml}${choicesHtml}</div>
+    </div>`;
+  return p;
+}
+
+function buildInterludePage(il) {
+  const p = document.createElement('div');
+  p.className = 'page'; p.id = 'interlude';
+  const evHtml = il.events.map(e=>`<div class="ev-item"><span class="ev-reward">${e.reward}</span><span class="ev-loc">${e.who} · ${e.loc}</span></div>`).join('');
+  const chHtml = il.choices.map(c=>`<div class="ch-item"><span class="ch-pick">✓ ${c.pick}</span>${c.alts?`<div class="ch-alts">${c.alts.map(a=>`<span>${esc(a)}</span>`).join('')}</div>`:''}<span class="ch-loc">${c.loc}</span></div>`).join('');
+  p.innerHTML = `
+    <div class="act-head"><h2>${il.heading}</h2><span class="lvl">${il.sub}</span></div>
+    <div class="il-grid">
+      <div class="events-card"><div class="events-title">★ Events to Grab</div>${evHtml}</div>
+      <div class="choices-card"><div class="choices-title">⚑ Choices</div>${chHtml}</div>
+    </div>`;
+  return p;
+}
+
+function buildAscendancyPage() {
+  const p = document.createElement('div');
+  p.className = 'page'; p.id = 'ascendancy';
+  const nodes = [
+    { name: 'Way of the Mountain', order: '1st — Trial of Sekhemas (Act 2, ASAP)', when: 'campaign', color: 'var(--gem-skill)', desc: "Immobilise enemies → Mountain's Teachings (max 30 stacks). While active: 15% more attack dmg, hits ≤10% max life deal 40% less dmg, +50% Stun Threshold. Lose stacks when hit or after 20s without gaining any." },
+    { name: 'Hollow Focus Technique', order: '2nd — Trial of Chaos (Level 40+)', when: 'campaign', color: 'var(--gem-skill)', desc: 'Grants Hollow Focus — ethereal bell spawns near you every 7.05s. Your hits destroy it → shockwave damages nearby enemies, Heavy Stuns Primed enemies. Bells are always Primed for Stun, always Crit, and can be Culled. Cull with Killing Palm = instant Power Charges.' },
+    { name: 'Way of the Stonefist', order: '3rd — Trial of Sekhemas (early maps)', when: 'maps', color: 'var(--accent)', desc: 'Transforms your gloves into Fists of Stone while equipped (+3 Evasion/lvl, +1 ES/lvl). All Explicit Modifiers on your gloves become more powerful versions (e.g. Crit Damage → Crit Chance, Attack Speed → Onslaught).' },
+    { name: 'Hollow Resonance Technique', order: '4th — endgame', when: 'endgame', color: 'var(--accent)', desc: 'Attaches an ethereal bell to your back. Critical Hits cause it to ring out → shockwave damages nearby enemies. 150% More Stun Buildup. 0.50s cooldown (3 stored uses). Requires non-Talisman Melee weapon.' },
+    { name: 'Hollow Form Technique', order: 'Optional — Level 90', when: 'endgame', color: 'var(--text-dim)', desc: 'Channel to create ghost images of yourself that perform your Socketed Melee Attack. Consuming a Power Charge creates additional images. Socketed Skills deal 15% less damage, have 30% less Attack Speed, cannot consume Charges.' },
+    { name: 'Martial Master', order: 'Optional', when: 'endgame', color: 'var(--text-dim)', desc: 'Skills can build and retain Combo regardless of Weapon Set. Gain Combo from all Attack Hits.' },
+    { name: 'Martial Adept', order: 'Optional', when: 'endgame', color: 'var(--text-dim)', desc: 'When you gain Combo, gain an additional Combo. -0.2 seconds to current Energy Shield Recharge delay per Combo expended.' },
+    { name: 'Runic Meridians', order: 'Optional', when: 'endgame', color: 'var(--text-dim)', desc: 'Tattoo Runes onto your body — adds Rune-only sockets: 1 Helmet, 2 Body Armour, 1 Gloves, 1 Boots.' },
+  ];
+  const cards = nodes.map(n => `
+    <div style="background:var(--bg-panel);border:1px solid var(--border);border-left:3px solid ${n.color};border-radius:8px;padding:0.65rem 0.85rem">
+      <div style="font-size:0.85rem;font-weight:800;color:${n.color};margin-bottom:0.18rem">${esc(n.name)}</div>
+      <div style="font-size:0.58rem;color:var(--gem-skill);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.35rem">${esc(n.order)}</div>
+      <div style="font-size:0.72rem;color:var(--text);line-height:1.55">${esc(n.desc)}</div>
+    </div>`).join('');
+  p.innerHTML = `
+    <div class="act-head"><h2>Martial Artist — Ascendancy Nodes</h2><span class="lvl">ALL NODES</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(22rem,1fr));gap:0.65rem;margin-top:0.5rem">${cards}</div>`;
+  return p;
+}
+
+function buildEndgamePage(eg) {
+  const p = document.createElement('div');
+  p.className = 'page'; p.id = 'endgame';
+  const cards = eg.cards.map(c=>`<div class="sc ${c.type==='sp'?'sp':''}"><div class="sc-hd"><span class="sc-title">${c.title}</span></div><ul class="sc-list">${c.items.map(i=>`<li><span class="sp-dot">+</span><span>${i}</span></li>`).join('')}</ul></div>`).join('');
+  p.innerHTML = `
+    <div class="act-head"><h2>${eg.heading}</h2><span class="lvl">${eg.sub}</span></div>
+    <div class="combat-bar" style="margin-bottom:0.65rem"><span style="font-size:0.78rem;color:var(--text)">${eg.summary}</span></div>
+    <div class="eg-grid">${cards}</div>`;
+  return p;
+}
+
+function buildToolsPage(b) {
+  const p = document.createElement('div');
+  p.className = 'page'; p.id = 'tools';
+  const savedRx = localStorage.getItem('poe2_rx') || '';
+  const savedNotes = localStorage.getItem('poe2_notes') || '';
+  const links = b.quickLinks.map(l=>`<li><a href="${l.url}" target="_blank">${esc(l.label)}</a><div class="ld">${esc(l.desc)}</div></li>`).join('');
+  p.innerHTML = `
+    <div class="act-head"><h2>Tools — Regex &amp; Links</h2><span class="lvl">QUICK ACCESS</span></div>
+    <div class="tools-cols">
+      <div class="panel">
+        <div class="panel-hd">Vendor Regex</div>
+        <div class="rx-block" style="border-color:var(--accent);background:rgba(106,174,245,0.05)">
+          <div class="rx-label"><span class="rx-lt" style="color:var(--accent)">★ Build Regex</span><span class="rx-src">p4wnyhof official</span></div>
+          <div class="rx-code" id="bRx">${esc(b.vendorRegex)}</div>
+          <button type="button" class="copy-btn" onclick="copyEl('bRx',this)">Copy Regex</button>
+          ${b.buildJson ? `<button type="button" class="dl-btn" onclick="downloadBuild()">⬇ Download .build</button>` : ''}
+        </div>
+        <div class="rx-block">
+          <div class="rx-label"><span class="rx-lt">Custom Regex</span><span class="rx-src">auto-saves</span></div>
+          <textarea class="rx-edit" id="uRx" placeholder="Your own regex...">${esc(savedRx)}</textarea>
+          <button type="button" class="copy-btn" onclick="copyTA('uRx',this)">Copy</button>
+        </div>
+      </div>
+      <div class="panel"><div class="panel-hd">Quick Links</div><ul class="link-list">${links}</ul></div>
+    </div>
+    <div class="panel">
+      <div class="panel-hd">Notes — Auto-saves</div>
+      <textarea class="notes-ta" id="uNotes" placeholder="Gem drops, vendor tips, anything to remember...">${esc(savedNotes)}</textarea>
+      <div class="save-ok" id="saveOk">✓ Saved</div>
+    </div>`;
+  p.querySelector('#uRx').addEventListener('input', debSave);
+  p.querySelector('#uNotes').addEventListener('input', debSave);
+  return p;
+}
+
+// ═══════════════════════════════════════════════════════
+// TABS + BUILD SELECT
+// ═══════════════════════════════════════════════════════
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab===id));
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id===id));
+  if (current) localStorage.setItem(`poe2_tab_${current.id}`, id);
+  const act = current && current.acts.find(a => a.id === id);
+  if (act && act.alerts && act.alerts.length) {
+    const seenKey = `poe2_alerts_seen_${current.id}_${id}`;
+    if (!localStorage.getItem(seenKey)) {
+      const box = document.getElementById('mBox');
+      box.innerHTML = `<div class="alert-hd">⚠ Critical — read before you start this act</div>`
+        + act.alerts.map(a => `<div class="alert-item"><div class="alert-title">${esc(a.title)}</div><div class="alert-body">${esc(a.body)}</div></div>`).join('')
+        + `<button class="alert-ok" onclick="document.getElementById('mOverlay').style.display='none';localStorage.setItem('${seenKey}','1')">Got it — let's go</button>`;
+      document.getElementById('mOverlay').style.display = 'flex';
+    }
+  }
+}
+function initSelector() {
+  const sel = document.getElementById('bSelect');
+  BUILDS.forEach(b => { const o=document.createElement('option'); o.value=b.id; o.textContent=b.name; sel.appendChild(o); });
+  const saved = localStorage.getItem('poe2_build');
+  const b = BUILDS.find(x=>x.id===saved)||BUILDS[0];
+  sel.value = b.id;
+  renderBuild(b);
+}
+function switchBuild(id) {
+  const b = BUILDS.find(x=>x.id===id); if(!b) return;
+  localStorage.setItem('poe2_build', id); renderBuild(b);
+}
+
+// ═══════════════════════════════════════════════════════
+// DOWNLOAD .BUILD FILE
+// ═══════════════════════════════════════════════════════
+function downloadBuild() {
+  const b = current;
+  if (!b || !b.buildJson) return;
+  const blob = new Blob([b.buildJson], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${b.name}.build`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function copyEl(id,btn){ navigator.clipboard.writeText(document.getElementById(id)?.textContent||'').then(()=>flash(btn)); }
+function copyTA(id,btn){ navigator.clipboard.writeText(document.getElementById(id)?.value||'').then(()=>flash(btn)); }
+function flash(btn){ const o=btn.textContent; btn.textContent='✓ Copied'; btn.classList.add('copied'); setTimeout(()=>{btn.textContent=o;btn.classList.remove('copied');},1500); }
+function closeMifBg(e){ if(e.target.id==='mOverlay') document.getElementById('mOverlay').style.display='none'; }
+function openGemModal(name, source, note) {
+  const box = document.getElementById('mBox');
+  box.innerHTML = `<div style="font-size:1rem;font-weight:800;color:var(--gem-skill);margin-bottom:0.5rem">${name}</div>${source?`<div style="font-size:0.7rem;color:var(--text-dim);margin-bottom:0.6rem">${source}</div>`:''}<div style="font-size:0.82rem;color:var(--text);line-height:1.6">${note}</div><button onclick="document.getElementById('mOverlay').style.display='none'" style="margin-top:1rem;padding:0.4rem 1rem;background:var(--bg-elev);border:1px solid var(--border-bright);color:var(--text);font-family:inherit;font-size:0.75rem;border-radius:4px;cursor:pointer">Close</button>`;
+  document.getElementById('mOverlay').style.display = 'flex';
+}
+function toggleEv(key, cb) {
+  const row = document.getElementById('evi_' + key);
+  if (cb.checked) { localStorage.setItem(key,'1'); row && row.classList.add('done'); }
+  else { localStorage.removeItem(key); row && row.classList.remove('done'); }
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') document.getElementById('mOverlay').style.display='none'; });
+let _st=null;
+function debSave(){
+  clearTimeout(_st); _st=setTimeout(()=>{
+    const r=document.getElementById('uRx'), n=document.getElementById('uNotes'), s=document.getElementById('saveOk');
+    if(r) localStorage.setItem('poe2_rx',r.value);
+    if(n) localStorage.setItem('poe2_notes',n.value);
+    if(s){s.classList.add('show');setTimeout(()=>s.classList.remove('show'),1200);}
+  },500);
+}
+
+initSelector();
+</script>
+</body>
+</html>
